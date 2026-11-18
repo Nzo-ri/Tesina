@@ -1,9 +1,9 @@
 library(stringr)
 library(pheatmap)
 
-options(stringAsFactor = F)
+options(stringAsFactor = FALSE)
 
-setwd("D:/Lorenzo/Desktop/Università/Magistrale/1° anno/Bioingegneria per la genomica/Tesina")
+setwd("C:/Users/Lorenzo/Desktop/Università/Magistrale/Bioing/Tesina")
 
 #creiamo la directory dei risultati
 
@@ -17,6 +17,7 @@ if(!dir.exists(dirRes)){
 #creiamo la matrice dei geni del tumore
 
 tumor = "brca"
+
 dirTumor = paste0(dirRes,tumor,"/")
 if(!dir.exists(dirTumor)){
   dir.create(dirTumor)
@@ -50,13 +51,13 @@ pz = colnames(tmp) #barcodes dei pazienti
 
 #cerchiamo pazienti sani e malati con grep()
 
-pzN = grep("TCGA-\\w+-\\w+1\\d", pz, value = T) #pazienti sani identificati con 1
-pzC = grep("TCGA-\\w+-\\w+0\\d", pz, value = T) #pazienti malati identificati con 0
+pzN = grep("TCGA-\\w+-\\w+-1\\d", pz, value = T) #pazienti sani identificati con 1
+pzC = grep("TCGA-\\w+-\\w+-0\\d", pz, value = T) #pazienti malati identificati con 0
 
-#eliminiamo gli eventuali duplicati
+#cerchiamo i duplicati
 pzN = pzN[!duplicated(str_extract(pzN,"TCGA-\\w+-\\w+-"))]
-pzC_duplicati = pzC[!duplicated(str_extract(pzN,"TCGA-\\w+-\\w+-"))]
-pzc_univoci = pzC[!duplicated(str_extract(pzC,"TCGA-\\w+-\\w+-"))]
+#pzC_duplicati = pzC[!duplicated(str_extract(pzN,"TCGA-\\w+-\\w+-"))]
+pzC = pzC[!duplicated(str_extract(pzC,"TCGA-\\w+-\\w+-"))]
 
 nameN = str_extract(pzN, "TCGA-\\w+-\\w+-")
 nameC = str_extract(pzC, "TCGA-\\w+-\\w+-")
@@ -64,7 +65,7 @@ nameC = str_extract(pzC, "TCGA-\\w+-\\w+-")
 common_pz = intersect(nameN,nameC)
 
 pzN_com = unlist(lapply(common_pz, function(x){grep(x, pzN, value = TRUE)}))
-pzC_com = unlist(lapply(common_pz, function(x){grep(x, pzN, value = TRUE)}))
+pzC_com = unlist(lapply(common_pz, function(x){grep(x, pzC, value = TRUE)}))
 
 dataN = tmp[,pzN_com]
 dataC = tmp[, pzC_com]
